@@ -15,7 +15,9 @@
 
 1. **Conforming Discrete Laplacian (Lines 21--28)**:
    Assembled in just 7 lines via orthogonal 1D Kronecker tensor sums:
+
    $$\mathbf{K}_{\text{lap}} = \mathbf{D}_x \otimes \mathbf{M}_y + \mathbf{M}_x \otimes \mathbf{D}_y$$
+
    Strictly ensures exact zero-flux Neumann boundary conservation ($\sum_j K_{\text{lap}, ij} = 0$), eliminating numerical boundary phase drift without auxiliary projection loops.
 2. **Matrix-Free Convolution Architecture (Lines 35, 43)**:
    Employs native 2D spatial convolution (`conv2`) with a $2 \times 2$ kernel ($1/4$) for physical element density mapping and adjoint sensitivity backpropagation, completely bypassing large sparse interpolation matrices.
@@ -77,29 +79,30 @@ topAC99(120, 80, 0.30, 3.0, 2.1, 0.065);
 `topAC99.m` easily adapts to diverse boundary conditions and passive design regions:
 
 ### 1. Clamped Cantilever Beam with Center Tip Load
-Modify Lines 17--20 to apply a fixed left wall and centered tip point load:
+Modify Lines 18--19 to apply a fixed left wall and centered tip point load:
 ```matlab
-% Cantilever Boundary Condition & Load (replace Lines 17--20)
-fixeddofs = 1:2*(nely+1);
-freedofs = setdiff(1:2*(nely+1)*(nelx+1), fixeddofs);
+% Cantilever Boundary Condition & Load (replace Lines 18--19)
 F = sparse(2*(nelx*(nely+1) + round(nely/2)+1), 1, -1, 2*(nely+1)*(nelx+1), 1);
-U = zeros(2*(nely+1)*(nelx+1), 1);
+fixeddofs = 1:2*(nely+1);
 ```
 Invoking `topAC99(120, 80, 0.40, 3.0, 2.1, 0.065)` converges in **77 iterations** ($c = 43.992$).
 
 ### 2. Highway Deck Arch Bridge with Passive Solid Deck
 Model a $120 \times 40$ bridge with two pinned bedrock abutments, distributed top roadway deck load, and a 2-element non-optimizable passive solid roadway slab:
-```matlab
-% 1. Bridge BC & Distributed Deck Load (replace Lines 17--20)
-deck_nodes = 1:(nely+1):(nelx+1)*(nely+1);
-fixeddofs = [2*(nely+1)+(-1:0), 2*(nelx+1)*(nely+1)+(-1:0)];
-freedofs = setdiff(1:2*(nely+1)*(nelx+1), fixeddofs);
-F = sparse(2*deck_nodes, 1, -1/length(deck_nodes), 2*(nely+1)*(nelx+1), 1);
-U = zeros(2*(nely+1)*(nelx+1), 1);
 
-% 2. Passive Solid Roadway Deck (insert immediately after Line 72)
+First, insert the following lines immediately after Line 72 to define the passive solid deck region:
+```matlab
+% Passive Solid Roadway Deck (insert immediately after Line 72)
 [node_X, node_Y] = meshgrid(0:nelx, 0:nely);
 a_lim(node_Y <= 2) = 1.0; b_lim(node_Y <= 2) = 1.0;
+```
+Second, replace Lines 18--19 with the following to apply the bridge boundary conditions and distributed deck load:
+```matlab
+% Highway Deck Arch Bridge Load & supports (replace Lines 18--19)
+deck_nodes = 1:( nely +1) :( nelx +1) *( nely +1);
+f_deck = [0.5; ones ( nelx -1 ,1) ; 0.5] / nelx;
+F = sparse (2* deck_nodes , 1 , - f_deck , 2*( nely +1) *( nelx +1) , 1);
+fixeddofs = [2*( nely +1) +( -1:0) , 2*( nelx +1) *( nely +1) +( -1:0)];
 ```
 Invoking `topAC99(120, 40, 0.40, 3.0, 2.1, 0.065)` converges in **88 iterations** ($c = 6.447$).
 
