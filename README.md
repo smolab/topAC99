@@ -1,4 +1,4 @@
-# topAC99: A 99-Line MATLAB Code for Topology Optimization via the Allen--Cahn Augmented Lagrangian Method
+# topAC99: A 99-Line MATLAB Code for Allen--Cahn Topology Optimization (ACTO) via the Augmented Lagrangian Method
 
 [![MATLAB](https://img.shields.io/badge/MATLAB-R2020a+-blue.svg)](https://www.mathworks.com/products/matlab.html)
 [![License: AGPL v3](https://img.shields.io/badge/License-AGPL_v3-blue.svg)](https://www.gnu.org/licenses/agpl-3.0)
@@ -113,9 +113,9 @@ Invoking `topAC99(120, 40, 0.40, 3.0, 2.1, 0.065)` converges in **88 iterations*
 If you use `topAC99` in your research, teaching, or academic projects, please cite:
 
 ```bibtex
-@article{Du2026topAC99,
+@article{DuRun2026topAC99,
   author  = {Run Du},
-  title   = {{topAC99}: A 99-Line {MATLAB} Code for Topology Optimization via the {Allen--Cahn} Augmented {Lagrangian} Method},
+  title   = {{topAC99}: A 99-Line {MATLAB} Code for {A}llen--{C}ahn Topology Optimization via the Augmented {L}agrangian Method},
   journal = {Structural and Multidisciplinary Optimization},
   year    = {2026},
   note    = {Educational Paper, under review}
@@ -130,7 +130,8 @@ If you use `topAC99` in your research, teaching, or academic projects, please ci
 * **Laboratory**: **SMOLab** (Structural & Multidisciplinary Optimization Laboratory)
 * **Affiliations**: 
   * School of Mechanical Engineering, Southwest Jiaotong University, Chengdu, China
-  * State Key Laboratory of Bridge Intelligent and Green Construction, Southwest Jiaotong University
+  * Technology and Equipment of Rail Transit Operation and Maintenance Key Laboratory of Sichuan Province
+  * State Key Laboratory of Bridge Intelligent and Green Construction
 * **Official Repository**: [https://github.com/smolab/topAC99](https://github.com/smolab/topAC99)
 
 ---

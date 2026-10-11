@@ -1,5 +1,5 @@
 function [c, x, loop, h_norm] = topAC99(nelx, nely, volfrac, penal, w, beta)
-%% 0. PHYSICAL INTERFACE PARAMETERS (FILTER-FREE)
+%% 0. PHYSICAL INTERFACE PARAMETERS
 ell = w / (sqrt(2)*log(9));
 eps = ell * sqrt(beta);
 %% 1. MATERIAL & FINITE ELEMENT SETUP
@@ -99,7 +99,7 @@ end
 end
 
 %% ===========================================================================
-%% topAC99: Topology Optimization with Allen--Cahn Augmented Lagrangian Method
+%% topAC99: Allen-Cahn Topology Optimization (ACTO) via ALM
 %% ===========================================================================
 % Author: Run Du (rdu@swjtu.edu.cn)
 % Repository: https://github.com/smolab/topAC99
