@@ -87,7 +87,7 @@ for loop = 1:500
     fprintf('It.:%3d  Comp.:%7.3f  ||h||_*:%7.2e  ch.:%6.4f\n', loop, c, h_norm, ch);
     colormap(gray); imagesc(1 - x); caxis([0 1]);
     axis equal; axis tight; axis off; drawnow;
-    if loop >= 30 && ch < 0.01, break; end
+    if loop >= 30 && ch < 0.01 && h_norm <= 0.28*beta, break; end
     phi = phi_trial;
     % ALM Multiplier & Penalty Schedule
     lambda_h = lambda_h + rho_h * (h .* Minv);
