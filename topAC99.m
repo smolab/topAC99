@@ -1,7 +1,7 @@
 function [c, x, loop, h_norm] = topAC99(nelx, nely, volfrac, penal, w, beta)
 %% 0. PHYSICAL INTERFACE PARAMETERS
 ell = w / (sqrt(2)*log(9));
-eps = ell * sqrt(beta);
+ep = ell * sqrt(beta);
 %% 1. MATERIAL & FINITE ELEMENT SETUP
 E0 = 1.0; Emin = 1e-9; nu = 0.3;
 A11 = [12  3 -6 -3;  3 12  3  0; -6  3 12 -3; -3  0 -3 12];
@@ -45,16 +45,16 @@ for loop = 1:500
     dW = beta * (2*phi - 6*phi.^2 + 4*phi.^3);
     d2W = beta * (2 - 12*phi + 12*phi.^2);
     mu = sum(M(:).*dW(:)) / Omega;
-    h = eps^2 * reshape(Klap*phi(:), nely+1, nelx+1) + M.*(dW - mu);
+    h = ep^2 * reshape(Klap*phi(:), nely+1, nelx+1) + M.*(dW - mu);
     h_norm = sqrt(sum(h(:).^2 ./ M(:)) / Omega);
     z = lambda_h + rho_h * (h .* Minv);
     z_bar = sum(M(:).*z(:)) / Omega;
-    grad_h = eps^2 * reshape(Klap*z(:), nely+1, nelx+1) + M.*d2W.*(z - z_bar);
+    grad_h = ep^2 * reshape(Klap*z(:), nely+1, nelx+1) + M.*d2W.*(z - z_bar);
     % Total Sensitivity & Moving Asymptotes Update
     w_h = min(1, 0.05 + 0.06 * loop);
     df0 = grad_c + w_h * grad_h;
     df1 = M / Omega;
-    if loop > 30 && abs(c - c_old)/c < 1e-3 && h_norm <= 0.28*beta, move = max(0.005, move*0.95); end
+    if loop > 30 && abs(c - c_old)/max(abs(c),1e-6) < 1e-3 && h_norm <= 0.28*beta, move = max(0.005, move*0.95); end
     if loop > 2
         gam = ones(size(phi));
         gam((phi - p_old1).*(p_old1 - p_old2) > 0) = 1.2;
@@ -93,7 +93,7 @@ for loop = 1:500
     lambda_h = lambda_h + rho_h * (h .* Minv);
     lambda_h = max(-10, min(10, lambda_h));
     lambda_h = lambda_h - sum(M(:).*lambda_h(:)) / Omega;
-    if mod(loop, 10) == 0 && h_norm > 1e-3, rho_h = min(10.0, rho_h * 1.1); end
+    if mod(loop, 10) == 0 && h_norm > 0.015*beta, rho_h = min(10.0, rho_h * 1.1); end
     c_old = c;
 end
 end
