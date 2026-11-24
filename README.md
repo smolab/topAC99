@@ -77,14 +77,9 @@ Run the $120 \times 80$ half-MBB beam at $V_0 = 0.30$ and $V_0 = 0.40$:
 `topAC99.m` adapts directly to non-self-adjoint compliant mechanisms and passive structural subdomains without modifying the Kronecker Laplacian, `conv2` field transfers, AC-ALM loop, or 18-line 1D-dual MMA solver:
 
 ### 1. Compliant Mechanism: Symmetric Force Inverter
-Replace Lines 17--19 and Lines 38--41 in `topAC99.m` (7 kernel lines replaced by 9 lines):
-```matlab
-% Force Inverter Ports, Loads & Symmetry BCs (Replaces Lines 17--19)
-din = 1; dout = 2*nelx*(nely+1) + 1;
-U = zeros(2*(nely+1)*(nelx+1), 2);
-F = sparse([din, dout], [1, 2], [1, 1], 2*(nely+1)*(nelx+1), 2);
-fixeddofs = [2*(nely+1)+(-3:0), 2:2*(nely+1):2*(nelx+1)*(nely+1)];
-```
+Apply the edits below from bottom to top so the earlier line numbers in `topAC99.m` stay valid (7 kernel lines replaced by 9 lines):
+
+1. First, replace **Lines 38--41** with the port springs, two-column solve, and mutual-energy evaluation:
 ```matlab
 % Springs, Two-Column Solve & Mutual Energy (Replaces Lines 38--41)
 K = sparse([iK; din; dout], [jK; din; dout], [sK; 0.1; 0.1]); K = (K + K')/2;
@@ -93,24 +88,34 @@ U1 = U(:,1); U2 = U(:,2);
 ce = reshape(sum((U1(edofMat)*KE).*U2(edofMat), 2), nely, nelx);
 c = U(dout, 1);
 ```
+2. Next, replace **Lines 17--19** with the port definitions, loads, and symmetry boundary conditions:
+```matlab
+% Force Inverter Ports, Loads & Symmetry BCs (Replaces Lines 17--19)
+din = 1; dout = 2*nelx*(nely+1) + 1;
+U = zeros(2*(nely+1)*(nelx+1), 2);
+F = sparse([din, dout], [1, 2], [1, 1], 2*(nely+1)*(nelx+1), 2);
+fixeddofs = [2*(nely+1)+(-3:0), 2:2*(nely+1):2*(nelx+1)*(nely+1)];
+```
 Running `topAC99(120, 60, 0.30, 3.0, 2.1, 0.002)` on the lower symmetric half-grid converges in **93 iterations** to $u_{\mathrm{out}} = -1.0180$ ($u_{\mathrm{out},0/1} = -1.0606$, geometric advantage $\mathrm{GA} = 0.115$, $\|\mathbf{h}\|_* = 3.69 \times 10^{-4}$, $|V - V_0| = 1.17 \times 10^{-4}$). Homogeneous zero-flux symmetry across row 1 holds automatically via `Klap`.
 
 ### 2. Highway Deck Arch Bridge with Passive Solid Deck
-Model a $120 \times 40$ highway deck arch bridge ($V_0 = 0.40$) with pinned bedrock abutments, a uniform downward deck load, and a continuous two-element passive solid roadway deck (nodal rows `1:3`).
+Model a $120 \times 40$ highway deck arch bridge ($V_0 = 0.40$) with pinned bedrock abutments, a uniform downward deck load, and a continuous two-element passive solid roadway deck (nodal rows `1:3`). Apply the edits from bottom to top to preserve line numbers:
 
-Replace Lines 18--19 with the distributed load and bedrock pins:
+1. First, insert **after Line 72** to clamp the passive deck bounds:
+```matlab
+a_lim(1:3, :) = 1.0; b_lim(1:3, :) = 1.0;      % insert after Line 72
+```
+2. Second, insert **after Line 30** to initialize the passive deck and history buffers:
+```matlab
+phi(1:3, :) = 1.0; p_old1 = phi; p_old2 = phi; % insert after Line 30
+```
+3. Third, replace **Lines 18--19** with the distributed deck load and pinned bedrock supports:
 ```matlab
 % Distributed Deck Load & Bedrock Pins (Replaces Lines 18--19)
 deck_nodes = 1:(nely+1):(nelx+1)*(nely+1);
 f_deck = [0.5; ones(nelx-1,1); 0.5] / nelx;
 F = sparse(2*deck_nodes, 1, -f_deck, 2*(nely+1)*(nelx+1), 1);
 fixeddofs = [2*(nely+1)+(-1:0), 2*(nelx+1)*(nely+1)+(-1:0)];
-```
-Initialize and clamp the passive deck nodes without per-iteration `meshgrid` overhead:
-```matlab
-% Passive Solid Deck Initialization & Clamping
-phi(1:3, :) = 1.0; p_old1 = phi; p_old2 = phi; % after Line 30
-a_lim(1:3, :) = 1.0; b_lim(1:3, :) = 1.0;      % after Line 72
 ```
 Running `topAC99(120, 40, 0.40, 3.0, 2.1, 0.065)` converges in **87 iterations** to $c = 6.501$ ($c_{0/1} = 5.938$, $|V - V_0| = 6.36 \times 10^{-5}$).
 
