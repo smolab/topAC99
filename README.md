@@ -121,15 +121,6 @@ Running `topAC99(120, 40, 0.40, 3.0, 2.1, 0.065)` converges in **87 iterations**
 
 ---
 
-## Educational Companion: Element Stiffness Matrix Derivation (`KE`)
-
-The repository includes **[`calculate_stiffness_matrix.m`](calculate_stiffness_matrix.m)** demonstrating how the compact integer blocks `A11`, `A12`, `B11`, `B12` (Lines 7--11 in `topAC99.m`) arise from standard $2 \times 2$ Gauss quadrature of plane-stress Q4 bilinear elements:
-```matlab
-calculate_stiffness_matrix;
-```
-
----
-
 ## Citation
 
 If you use `topAC99` in your research or teaching, please cite both this software implementation and the companion continuum ACTO formulation:
