@@ -129,7 +129,9 @@ If you use `topAC99` in your research or teaching, please cite both this softwar
 @article{DuRun2026topAC99,
   author  = {Run Du},
   title   = {{topAC99}: A compact {MATLAB} implementation of filter-free {A}llen--{C}ahn topology optimization with matrix-free field transfer},
+  journal = {arXiv preprint arXiv:2611.31885},
   year    = {2026},
+  doi     = {10.48550/arXiv.2611.31885}
   note    = {Submitted manuscript; code available at \url{https://github.com/smolab/topAC99}}
 }
 
