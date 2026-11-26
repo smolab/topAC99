@@ -136,7 +136,7 @@ If you use `topAC99` in your research or teaching, please cite both this softwar
 }
 
 @article{DuRun2026topac,
-  author  = {Run Du and Xueke Xiao and Wenming Cheng and Zeqiang Zhang},
+  author  = {Run Du and Xuan Xiao and Wenming Cheng and Zeqiang Zhang},
   title   = {{A}llen--{C}ahn residual-constrained topology optimization via an augmented {L}agrangian method},
   journal = {arXiv preprint arXiv:2611.02375},
   year    = {2026},
